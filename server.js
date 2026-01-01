@@ -20,6 +20,10 @@ app.get("/", (req, res) => {
 io.on("connection", (socket) => {
   console.log("✅ SOCKET CONNECTED:", socket.id);
 
+  bids.forEach((bid) => {
+    socket.emit("bidUpdate", { amount: bid.amount });
+  });
+
   socket.onAny((event, data) => {
     console.log("📩 EVENT:", event, data);
   });
@@ -28,6 +32,15 @@ io.on("connection", (socket) => {
     socket.join("admins");
     bids.forEach((bid) => socket.emit("adminBidUpdate", bid));
   });
+
+  io.on("connection", (socket) => {
+    console.log("✅ SOCKET CONNECTED:", socket.id);
+
+    socket.on("placeBid", (data) => {
+      console.log("🔥 BID RECEIVED:", data);
+    });
+  });
+
 
   socket.on("placeBid", (data) => {
     const bid = {
