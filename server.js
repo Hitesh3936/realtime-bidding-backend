@@ -12,7 +12,8 @@ const io = new Server(server, {
 });
 
 let bids = [];
-let groups = {}; // groupCode -> bids array
+let users = {};    // socket.id -> username
+let groups = {};  // groupCode -> bids[]
 
 
 app.get("/", (req, res) => {
@@ -125,6 +126,34 @@ io.on("connection", (socket) => {
     // notify admin
     io.to("admins").emit("adminBidCleared");
   });
+
+  const socket = io("https://realtime-bidding-backend.onrender.com");
+
+  auth.currentUser.getIdToken().then(token => {
+    socket.emit("auth", token);
+  });
+
+  const admin = require("firebase-admin");
+
+  admin.initializeApp({
+    credential: admin.credential.applicationDefault()
+  });
+
+  let users = {}; // socket.id → user email
+
+  io.on("connection", (socket) => {
+    socket.on("auth", async (token) => {
+      try {
+        const decoded = await admin.auth().verifyIdToken(token);
+        users[socket.id] = decoded.email;
+        console.log("✅ Authenticated:", decoded.email);
+      } catch {
+        socket.disconnect();
+      }
+    });
+  });
+
+
 
 
 });
