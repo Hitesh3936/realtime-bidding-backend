@@ -18,7 +18,11 @@ app.get("/", (req, res) => {
 });
 
 io.on("connection", (socket) => {
-  console.log("Connected:", socket.id);
+  console.log("✅ SOCKET CONNECTED:", socket.id);
+
+  socket.onAny((event, data) => {
+    console.log("📩 EVENT:", event, data);
+  });
 
   socket.on("joinAdmin", () => {
     socket.join("admins");
@@ -34,15 +38,13 @@ io.on("connection", (socket) => {
 
     bids.push(bid);
 
-    // Users: anonymous
     io.emit("bidUpdate", { amount: bid.amount });
-
-    // Admin: full details
     io.to("admins").emit("adminBidUpdate", bid);
   });
 });
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-  console.log("Server running on port", PORT);
+  console.log("🚀 Server running on port", PORT);
 });
+
