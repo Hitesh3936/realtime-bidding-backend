@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Admin Panel</title>
+<script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+<h2>Admin – Full Bid Details</h2>
+<ul id="adminBids"></ul>
+
+
+<script>
+  const socket = io();
+
+  socket.emit('joinAdmin'); // 👑 identify as admin
+
+  socket.on('adminBidUpdate', (bid) => {
+    const li = document.createElement('li');
+    li.innerText = `${bid.user} → ₹${bid.amount} (${bid.time})`;
+    document.getElementById('adminBids').appendChild(li);
+  });
+</script>
+
+</body>
+</html>
