@@ -54,7 +54,23 @@ io.on("connection", (socket) => {
     io.emit("bidUpdate", { amount: bid.amount });
     io.to("admins").emit("adminBidUpdate", bid);
   });
+  socket.on("adminBidCleared", () => {
+    document.getElementById("adminBids").innerHTML = "";
+  });
+
+  socket.on("clearBids", () => {
+    bids = [];
+    console.log("🧹 All bids cleared by admin");
+
+    io.emit("clearBidList");
+    io.to("admins").emit("adminBidCleared");
+  });
+
 });
+function clearAllBids() {
+  socket.emit("clearBids");
+}
+
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
