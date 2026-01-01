@@ -59,17 +59,24 @@ io.on("connection", (socket) => {
   });
 
   socket.on("clearBids", () => {
-    bids = [];
-    console.log("🧹 All bids cleared by admin");
+    console.log("🧹 Clear bids requested");
 
+    bids = [];
+
+    // notify all users
     io.emit("clearBidList");
+
+    // notify admin
     io.to("admins").emit("adminBidCleared");
   });
 
+
 });
 function clearAllBids() {
+  console.log("🧹 Clear button clicked");
   socket.emit("clearBids");
 }
+
 
 
 const PORT = process.env.PORT || 3000;
